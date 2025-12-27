@@ -1,1 +1,39 @@
-...
+name: Deploy PROD - Viemar Tech
+
+on:
+  push:
+    branches:
+      - main  # O deploy dispara automaticamente sempre que você enviar algo para a branch main
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Comando para rodar no seu Runner (Servidor A)
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Atualizar Servidor B (CentOS) via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 10.0.1.215
+          username: githubti
+          # Esta chave deve ser a chave PRIVADA que dá acesso ao Servidor B
+          key: ${{ secrets.ACTIONS_RUNNERS_SERVER_SQL_PG }}
+          port: 22
+          script: |
+            echo "--- Iniciando Atualização no Servidor B ---"
+            cd /opt/teste_actions_runner
+            
+            # Garante que o diretório é um repositório git seguro
+            git config --global --add safe.directory /opt/teste_actions_runner
+            
+            # Sincroniza os arquivos
+            # O reset --hard força o servidor a ficar igual ao GitHub, descartando lixo local
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+            
+            echo "--- Deploy Finalizado com Sucesso! ---"
+            echo "Versão atual: $(git rev-parse --short HEAD)"
+            ls -la
