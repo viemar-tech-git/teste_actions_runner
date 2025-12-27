@@ -3,37 +3,43 @@ name: Deploy PROD - Viemar Tech
 on:
   push:
     branches:
-      - main  # O deploy dispara automaticamente sempre que você enviar algo para a branch main
+      - main
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Comando para rodar no seu Runner (Servidor A)
+    runs-on: self-hosted  # Executa no seu Runner (Servidor A)
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
       - name: Atualizar Servidor B (CentOS) via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        # Usamos 'v1' para garantir que rode via Node.js e não dependa de Docker
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: 10.0.1.215
           username: githubti
-          # Esta chave deve ser a chave PRIVADA que dá acesso ao Servidor B
           key: ${{ secrets.ACTIONS_RUNNERS_SERVER_SQL_PG }}
           port: 22
           script: |
             echo "--- Iniciando Atualização no Servidor B ---"
             cd /opt/teste_actions_runner
             
-            # Garante que o diretório é um repositório git seguro
+            # Configuração de segurança para o Git não bloquear a pasta
             git config --global --add safe.directory /opt/teste_actions_runner
             
-            # Sincroniza os arquivos
-            # O reset --hard força o servidor a ficar igual ao GitHub, descartando lixo local
+            # Atualização dos arquivos
+            echo "Buscando alterações no GitHub..."
             git fetch origin main
+            
+            echo "Sincronizando arquivos (Reset Hard)..."
             git reset --hard origin/main
+            
+            echo "Limpando arquivos não rastreados..."
             git clean -fd
             
-            echo "--- Deploy Finalizado com Sucesso! ---"
-            echo "Versão atual: $(git rev-parse --short HEAD)"
+            echo "--- Conteúdo atual da pasta: ---"
             ls -la
+            
+            echo "--- Deploy Finalizado com Sucesso! ---"
+            echo "Hash do commit: $(git rev-parse --short HEAD)"
