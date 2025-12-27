@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, Linux, server-sql-pg-ubuntu]  # Executa no seu Runner (Servidor A)
+    runs-on: self-hosted  # Executa no seu Runner (Servidor A)
 
     steps:
       - name: Checkout do código
