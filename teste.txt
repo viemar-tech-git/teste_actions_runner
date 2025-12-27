@@ -4,3 +4,4 @@ Deploy automático funcionando perfeitamente em 2025!
 Commit em 27/12/2025
 Commit pelo VS Code
 teste commit delevop
+teste 2
