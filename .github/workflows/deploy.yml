@@ -7,14 +7,13 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Executa no seu Runner (Servidor A)
+    runs-on: [self-hosted, Linux, server-sql-pg-ubuntu]
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
       - name: Atualizar Servidor B (CentOS) via SSH
-        # Usamos 'v1' para garantir que rode via Node.js e não dependa de Docker
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: 10.0.1.215
@@ -22,24 +21,30 @@ jobs:
           key: ${{ secrets.ACTIONS_RUNNERS_SERVER_SQL_PG }}
           port: 22
           script: |
-            echo "--- Iniciando Atualização no Servidor B ---"
+            echo "--- INICIANDO LIMPEZA E ATUALIZAÇÃO FORÇADA ---"
             cd /opt/teste_actions_runner
             
-            # Configuração de segurança para o Git não bloquear a pasta
+            # Configuração de segurança
             git config --global --add safe.directory /opt/teste_actions_runner
             
-            # Atualização dos arquivos
-            echo "Buscando alterações no GitHub..."
-            git fetch origin main
+            # 1. Limpa qualquer tentativa de merge travada
+            git merge --abort || true
             
-            echo "Sincronizando arquivos (Reset Hard)..."
+            # 2. Busca tudo o que há de novo no GitHub
+            git fetch --all
+            
+            # 3. FORÇA o servidor a ficar igual à branch main do GitHub
+            # ATENÇÃO: Isso vai sobrescrever qualquer mudança feita direto no servidor
             git reset --hard origin/main
             
-            echo "Limpando arquivos não rastreados..."
+            # 4. Remove arquivos que não deveriam estar lá
             git clean -fd
             
-            echo "--- Conteúdo atual da pasta: ---"
-            ls -la
+            echo "--- VERIFICAÇÃO DO ARQUIVO TESTE.TXT ---"
+            echo "Conteúdo atual:"
+            cat teste.txt
             
-            echo "--- Deploy Finalizado com Sucesso! ---"
-            echo "Hash do commit: $(git rev-parse --short HEAD)"
+            echo "--- INFO DO DEPLOY ---"
+            echo "Hash do commit aplicado: $(git rev-parse --short HEAD)"
+            echo "Data/Hora: $(date)"
+            echo "--- SUCESSO ---"
