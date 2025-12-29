@@ -3,8 +3,6 @@
 # export PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/usr/sbin:/root/.local/bin
 export PATH=/home/githubti/.local/bin:/usr/local/bin:/usr/bin:/bin:/root/.local/bin
 
-# ... restante do seu script ...
-
 # 1. Captura o nome passado após o comando (ex: ./executar.sh projeto_xyz) "Pega a primeira palavra que o usuário digitar depois do nome do script".
 # A variavel $1 vai receber "projeto_xyz"
 PROJETO=$1
@@ -53,5 +51,4 @@ echo "Confirmado: Executando $PROJETO em $DIRETORIO_ESPERADO"
 
 # 5. Executa o main.py com um "Apelido" (Process Name, ex: projeto_xyz)
 # Usamos o comando 'exec -a' para dar um nome identificável ao processo no sistema
-# exec -a "PYTHON_$PROJETO" nice -n 10 uv run main.py
-nice -n 10 /home/githubti/.local/bin/uv run bash -c "exec -a python_$PROJETO python main.py" &
+nice -n 10 uv run $PROJETO.py   # média
