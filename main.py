@@ -1,6 +1,13 @@
-def main():
-    print("Hello from teste-actions-runner!")
+import time
+import sys
 
+# Pega o nome do projeto (opcional, apenas para o print)
+nome_projeto = sys.argv[0]
 
-if __name__ == "__main__":
-    main()
+print(f"--- Iniciando teste do projeto: {nome_projeto} ---")
+
+for i in range(30, 0, -1):
+    print(f"Rodando... {i} segundos restantes", end="\r")
+    time.sleep(1)
+
+print("\n--- Teste finalizado com sucesso! ---")

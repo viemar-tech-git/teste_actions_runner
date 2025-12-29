@@ -3,23 +3,51 @@
 # 1. Captura o nome do projeto passado por argumento
 # Se você rodar: ./executar.sh projeto_xyz "Pegue a primeira palavra que o usuário digitar depois do nome do script".
 # A variavel $1 vai receber "projeto_xyz"
+# 1. Captura o nome passado após o comando (ex: ./executar.sh "projeto_xyz)
 PROJETO=$1
 
-# 2. Define o caminho base onde ficam seus projetos
-# O diretorio tem que ser com memso nome do projeto, ex: projeto_xyz
-BASE_DIR="/opt"
-DIRETORIO_PROJETO="$BASE_DIR/$PROJETO"
-
-# 3. Validação: O usuário passou o nome do projeto?
+# 2. Validação: O usuário esqueceu de digitar o nome?
 if [ -z "$PROJETO" ]; then
-    echo "Erro: Você precisa informar o nome da pasta do projeto."
-    echo "Exemplo: ./executar.sh projeto_xyz"
+    echo "-------------------------------------------------------"
+    echo "ERRO: Você esqueceu de informar o nome do projeto!"
+    echo "Uso correto: ./executar.sh projeto_xyz"
+    echo "-------------------------------------------------------"
     exit 1
 fi
 
-# 4. Entra no diretório dinamicamente
-cd "$DIRETORIO_PROJETO" || { echo "Pasta $DIRETORIO_PROJETO não encontrada"; exit 1; }
+# --- NOVA TRAVA DE SEGURANÇA ---
+# Pega o nome da pasta onde o usuário está agora
+PASTA_ATUAL=$(basename "$(pwd)")
 
-# 5. Executa o main.py com um "Apelido" (Process Name)
+# Verifica se o nome digitado ($1) é IGUAL ao nome da pasta atual
+if [ "$PROJETO" != "$PASTA_ATUAL" ]; then
+    echo "------------------------------------------------------------"
+    echo "ERRO DE SEGURANÇA: Você tentou executar '$PROJETO'," 
+    echo "mas você está dentro da pasta '$PASTA_ATUAL'."
+    echo "O nome do projeto deve coincidir com a pasta atual."
+    echo "------------------------------------------------------------"
+    exit 1
+fi
+# -------------------------------
+
+# 3. Define o caminho base
+# O diretorio tem que ser com mesmo nome do projeto, ex: projeto_xyz
+BASE_DIR="/opt"
+DIRETORIO_ESPERADO="$BASE_DIR/$PROJETO"
+
+echo "------------------------------------------"
+echo "Iniciando projeto: $PROJETO"
+echo "Caminho:           $DIRETORIO_ESPERADO"
+echo "------------------------------------------"
+
+# 4. Verifica se o caminho atual é exatamente o que deveria ser
+if [ "$(pwd)" != "$DIRETORIO_ESPERADO" ]; then
+    echo "ERRO: Este projeto deve ser executado a partir de $DIRETORIO_ESPERADO"
+    exit 1
+fi
+
+echo "Confirmado: Executando $PROJETO em $DIRETORIO_ESPERADO"
+
+# 5. Executa o main.py com um "Apelido" (Process Name, ex: projeto_xyz)
 # Usamos o comando 'exec -a' para dar um nome identificável ao processo no sistema
 exec -a "PYTHON_$PROJETO" nice -n 10 uv run main.py
