@@ -39,6 +39,9 @@ jobs:
             
             # 4. Remove arquivos que não deveriam estar lá
             git clean -fd
+
+            # 5.GARANTIR PERMISSÃO DE EXECUÇÃO ---
+            chmod +x executar.sh
             
             echo "--- VERIFICAÇÃO DO ARQUIVO TESTE.TXT ---"
             echo "Conteúdo atual:"
