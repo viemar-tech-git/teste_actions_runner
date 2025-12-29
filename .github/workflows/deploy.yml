@@ -8,7 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, Linux, server-sql-pg-ubuntu]
-
+    env:
+          NOME_REPO: ${{ github.event.repository.name }}
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
