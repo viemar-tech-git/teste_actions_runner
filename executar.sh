@@ -1,9 +1,9 @@
 #!/bin/bash
+# Definir o PATH
+export PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/usr/sbin:/root/.local/bin
 
-# 1. Captura o nome do projeto passado por argumento
-# Se você rodar: ./executar.sh projeto_xyz "Pegue a primeira palavra que o usuário digitar depois do nome do script".
+# 1. Captura o nome passado após o comando (ex: ./executar.sh projeto_xyz) "Pega a primeira palavra que o usuário digitar depois do nome do script".
 # A variavel $1 vai receber "projeto_xyz"
-# 1. Captura o nome passado após o comando (ex: ./executar.sh "projeto_xyz)
 PROJETO=$1
 
 # 2. Validação: O usuário esqueceu de digitar o nome?
