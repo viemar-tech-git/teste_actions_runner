@@ -1,6 +1,9 @@
 #!/bin/bash
 # Definir o PATH
-export PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/usr/sbin:/root/.local/bin
+# export PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/usr/sbin:/root/.local/bin
+export PATH=/home/githubti/.local/bin:/usr/local/bin:/usr/bin:/bin:/root/.local/bin
+
+# ... restante do seu script ...
 
 # 1. Captura o nome passado após o comando (ex: ./executar.sh projeto_xyz) "Pega a primeira palavra que o usuário digitar depois do nome do script".
 # A variavel $1 vai receber "projeto_xyz"
