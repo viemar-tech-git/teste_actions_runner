@@ -1,0 +1,15 @@
+[project]
+name = "teste-actions-runner"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fdb>=2.0.4",
+    "pandas>=2.1.1",
+    "numpy>=1.26.4",
+    "psycopg2-binary>=2.9.10",
+    "python-dateutil>=2.9.0.post0",
+    "requests>=2.32.4",
+    "vieutil>=0.5",
+]
