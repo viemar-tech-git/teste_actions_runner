@@ -53,4 +53,5 @@ echo "Confirmado: Executando $PROJETO em $DIRETORIO_ESPERADO"
 
 # 5. Executa o main.py com um "Apelido" (Process Name, ex: projeto_xyz)
 # Usamos o comando 'exec -a' para dar um nome identificável ao processo no sistema
-exec -a "PYTHON_$PROJETO" nice -n 10 uv run main.py
+# exec -a "PYTHON_$PROJETO" nice -n 10 uv run main.py
+nice -n 10 /home/githubti/.local/bin/uv run bash -c "exec -a python_$PROJETO python main.py" &
