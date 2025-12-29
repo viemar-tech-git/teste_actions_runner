@@ -20,12 +20,14 @@ jobs:
           username: githubti
           key: ${{ secrets.ACTIONS_RUNNERS_SERVER_SQL_PG }}
           port: 22
+          # Passamos a variável do GitHub para dentro do SSH
+          envs: NOME_REPO
           script: |
-            echo "--- INICIANDO LIMPEZA E ATUALIZAÇÃO FORÇADA ---"
-            cd /opt/teste_actions_runner
+            echo "--- INICIANDO LIMPEZA E ATUALIZAÇÃO NO PROJETO: $NOME_REPO ---"
+            cd /opt/$NOME_REPO
             
             # Configuração de segurança
-            git config --global --add safe.directory /opt/teste_actions_runner
+            git config --global --add safe.directory /opt/$NOME_REPO
             
             # 1. Limpa qualquer tentativa de merge travada
             git merge --abort || true
@@ -43,11 +45,8 @@ jobs:
             # 5.GARANTIR PERMISSÃO DE EXECUÇÃO ---
             chmod +x executar.sh
             
-            echo "--- VERIFICAÇÃO DO ARQUIVO TESTE.TXT ---"
-            echo "Conteúdo atual:"
-            cat teste.txt
-            
             echo "--- INFO DO DEPLOY ---"
+            echo "Projeto: $NOME_REPO"
             echo "Hash do commit aplicado: $(git rev-parse --short HEAD)"
             echo "Data/Hora: $(date)"
             echo "--- SUCESSO ---"
