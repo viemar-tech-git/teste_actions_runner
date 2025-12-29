@@ -1,0 +1,32 @@
+name: CI - Validação de Sintaxe
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  validate-syntax:
+    runs-on: ubuntu-latest  # Roda nos servidores do GitHub, não precisa do seu
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar UV
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Verificar Sintaxe (Compileall)
+        run: |
+          echo "--- Verificando erros de sintaxe no projeto ---"
+          # O comando abaixo retorna erro se encontrar falhas de sintaxe
+          python -m compileall -q .
+          echo "--- Sucesso: Nenhum erro de sintaxe encontrado ---"
