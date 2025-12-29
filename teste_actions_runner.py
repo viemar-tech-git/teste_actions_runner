@@ -4,8 +4,8 @@ import sys
 # Pega o nome do projeto (opcional, apenas para o print)
 nome_projeto = sys.argv[0]
 
-print(f"--- Iniciando teste do projeto: {nome_projeto} ---"
-print(f"Codigo anterado."
+print(f"--- Iniciando teste do projeto: {nome_projeto} ---")
+print(f"Codigo anterado.")
 
 for i in range(30, 0, -1):
     print(f"Rodando... {i} segundos restantes", end="\r")
