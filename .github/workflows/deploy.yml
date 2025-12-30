@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: [self-hosted, Linux, server-sql-pg-ubuntu]
     env:
-          NOME_REPO: ${{ github.event.repository.name }}
+      NOME_REPO: ${{ github.event.repository.name }}
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -21,30 +21,53 @@ jobs:
           username: githubti
           key: ${{ secrets.ACTIONS_RUNNERS_SERVER_SQL_PG }}
           port: 22
-          # Passamos a variável do GitHub para dentro do SSH
           envs: NOME_REPO
           script: |
-            echo "--- INICIANDO LIMPEZA E ATUALIZAÇÃO NO PROJETO: $NOME_REPO ---"
-            cd /opt/$NOME_REPO
+            TARGET_DIR="/opt/app_github/$NOME_REPO"
+            REPO_SSH="git@github.com:viemar-tech-git/$NOME_REPO.git"
+
+            echo "--- VERIFICANDO ESTRUTURA PARA O PROJETO: $NOME_REPO ---"
+
+            # 1. Cria a pasta (precisa da Opção 1 acima configurada)
+            if [ ! -d "$TARGET_DIR" ]; then
+              echo "Diretório não existe. Criando $TARGET_DIR..."
+              mkdir -p "$TARGET_DIR"
+            fi
+
+            # 2. Entra na pasta. Se falhar (por erro de permissão), o script para aqui.
+            cd "$TARGET_DIR" || exit 1
+
+            # 3. Se não houver .git, limpa a pasta (caso tenha lixo) e clona
+            if [ ! -d ".git" ]; then
+              echo "Iniciando repositório do zero..."
+              # Garante que a pasta está vazia para o clone não dar erro
+              rm -rf ..?* .[!.]* * 2>/dev/null || true
+              git clone "$REPO_SSH" .
+            else
+              git remote set-url origin "$REPO_SSH"
+            fi
+
+            # 4. Configuração de segurança para o diretório
+            git config --global --add safe.directory "$TARGET_DIR"
             
-            # Configuração de segurança
-            git config --global --add safe.directory /opt/$NOME_REPO
+            echo "--- INICIANDO ATUALIZAÇÃO DO CÓDIGO ---"
             
-            # 1. Limpa qualquer tentativa de merge travada
+            # 5. Limpa qualquer tentativa de merge travada
             git merge --abort || true
             
-            # 2. Busca tudo o que há de novo no GitHub
+            # 6. Busca atualizações
             git fetch --all
             
-            # 3. FORÇA o servidor a ficar igual à branch main do GitHub
-            # ATENÇÃO: Isso vai sobrescrever qualquer mudança feita direto no servidor
+            # 7. FORÇA o servidor a ficar igual à branch main
             git reset --hard origin/main
             
-            # 4. Remove arquivos que não deveriam estar lá
+            # 8. Limpeza de arquivos não rastreados
             git clean -fd
 
-            # 5.GARANTIR PERMISSÃO DE EXECUÇÃO ---
-            chmod +x executar.sh
+            # 9. Garantir permissão de execução
+            if [ -f "executar.sh" ]; then
+              chmod +x executar.sh
+            fi
             
             echo "--- INFO DO DEPLOY ---"
             echo "Projeto: $NOME_REPO"
