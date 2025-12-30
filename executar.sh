@@ -33,7 +33,7 @@ fi
 
 # 3. Define o caminho base
 # O diretorio tem que ser com mesmo nome do projeto, ex: projeto_xyz
-BASE_DIR="/opt"
+BASE_DIR="/opt/app_github"
 DIRETORIO_ESPERADO="$BASE_DIR/$PROJETO"
 
 echo "------------------------------------------"
